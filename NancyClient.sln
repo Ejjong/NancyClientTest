@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D580493D-3EBB-4B0B-A3BB-8C492BDB5C37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{65BE1C92-C5BA-43B7-9AF8-598932D814EA}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EJ.ServiceModule", "src\EJ.ServiceModule\EJ.ServiceModule.csproj", "{41BBA707-4206-4BEB-A81E-C0B50F23B403}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EJ.ServiceModel", "src\EJ.ServiceModel\EJ.ServiceModel.csproj", "{622EFF31-1370-4CCD-BEA1-C47990A48DFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EJ.Web", "src\EJ.Web\EJ.Web.csproj", "{A7F0B4D6-3C23-4E70-815E-3D5916BBF6BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A5954CFE-90CD-4CF4-9EAD-6B42E0FAE97E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EJ.ServiceModule.Test", "test\EJ.ServiceModule.Test\EJ.ServiceModule.Test.csproj", "{6220BD7F-F9F5-4DDF-B9C5-80063F33D3D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{41BBA707-4206-4BEB-A81E-C0B50F23B403}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41BBA707-4206-4BEB-A81E-C0B50F23B403}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41BBA707-4206-4BEB-A81E-C0B50F23B403}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41BBA707-4206-4BEB-A81E-C0B50F23B403}.Release|Any CPU.Build.0 = Release|Any CPU
+		{622EFF31-1370-4CCD-BEA1-C47990A48DFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{622EFF31-1370-4CCD-BEA1-C47990A48DFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{622EFF31-1370-4CCD-BEA1-C47990A48DFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{622EFF31-1370-4CCD-BEA1-C47990A48DFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7F0B4D6-3C23-4E70-815E-3D5916BBF6BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7F0B4D6-3C23-4E70-815E-3D5916BBF6BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7F0B4D6-3C23-4E70-815E-3D5916BBF6BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7F0B4D6-3C23-4E70-815E-3D5916BBF6BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6220BD7F-F9F5-4DDF-B9C5-80063F33D3D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6220BD7F-F9F5-4DDF-B9C5-80063F33D3D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6220BD7F-F9F5-4DDF-B9C5-80063F33D3D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6220BD7F-F9F5-4DDF-B9C5-80063F33D3D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{41BBA707-4206-4BEB-A81E-C0B50F23B403} = {D580493D-3EBB-4B0B-A3BB-8C492BDB5C37}
+		{622EFF31-1370-4CCD-BEA1-C47990A48DFE} = {D580493D-3EBB-4B0B-A3BB-8C492BDB5C37}
+		{A7F0B4D6-3C23-4E70-815E-3D5916BBF6BE} = {D580493D-3EBB-4B0B-A3BB-8C492BDB5C37}
+		{6220BD7F-F9F5-4DDF-B9C5-80063F33D3D5} = {A5954CFE-90CD-4CF4-9EAD-6B42E0FAE97E}
+	EndGlobalSection
+EndGlobal
