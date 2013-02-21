@@ -19,12 +19,16 @@ namespace EJ.ServiceModule.Test
             // Then
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Equal("Hello World", result.Body.AsString());
+        }
 
+        [Fact]
+        public void ProxyTest()
+        {
             IProxy proxy = new Proxy();
             var ret = proxy.Get<IHelloModule>().GetIndex();
+            Assert.Equal("Hello World", ret);
 
-            IProxy proxy2 = new Proxy();
-            var ret2 = proxy.Get<HelloModule>().GetIndex();
+           // var ret2 = proxy.Get<IHelloModule>().GetMessage("Nancy");
         }
     }
 }

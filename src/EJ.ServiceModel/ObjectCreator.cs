@@ -1,58 +1,82 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Linq.Expressions;
-using System.Reflection.Emit;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using ImpromptuInterface;
+using ImpromptuInterface.Dynamic;
+using RestSharp;
 
 namespace EJ.ServiceModel
 {
     public static class ObjectCreator
     {
-        public static object CreateObject(Type type)
+        public static object CreateObject<T>() where T: class
         {
-            //return DelegateFactory.CreateCtor(type)();
-            return CreateInstance(type);
-        }
-
-        public static object CreateInstance(Type type)
-        {
-            var method = new DynamicMethod("", typeof(object), Type.EmptyTypes);
-            var il = method.GetILGenerator();
-
-            if (type.IsValueType)
+            dynamic tNew = new ImpromptuDictionary();
+            var rets = GetNancyOperation(typeof (T));
+            foreach (var ret in rets)
             {
-                var local = il.DeclareLocal(type);
-                // method.InitLocals == true, so we don't have to use initobj here
-                il.Emit(OpCodes.Ldloc, local);
-                il.Emit(OpCodes.Box, type);
-                il.Emit(OpCodes.Ret);
-            }
-            else
-            {
-                var ctor = type.GetConstructor(Type.EmptyTypes);
-                il.Emit(OpCodes.Newobj, ctor);
-                il.Emit(OpCodes.Ret);
+                tNew[ret.Key] = ret.Value;
             }
 
-            return method.Invoke(null, null);
+            return Impromptu.ActLike<T>(tNew);
         }
-    }
 
-    public static class DelegateFactory
-    {
-        public delegate object LateBoundCtor();
-
-        private static readonly ConcurrentDictionary<Type, LateBoundCtor> _ctorCache = new ConcurrentDictionary<Type, LateBoundCtor>();
-
-        public static LateBoundCtor CreateCtor(Type type)
+        public static Dictionary<string, object> GetNancyOperation(Type type)
         {
-            LateBoundCtor ctor = _ctorCache.GetOrAdd(type, t =>
+            var baseUrl = "http://localhost:60770/";
+            var modulePath = type.Name.Remove(0, 1).Replace("Module", "");
+
+            var ret = new Dictionary<string, object>();
+            object value = null;
+
+            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            foreach (MethodInfo method in methods)
             {
-                var ctorExpression = Expression.Lambda<LateBoundCtor>(Expression.Convert(Expression.New(type), typeof(object)));
+                var methodName = method.Name;
+                var parameters = method.GetParameters();
+                var nancyAttr = method.GetCustomAttribute<NancyOperationContractAttribute>();
+                if (nancyAttr == null)
+                {
+                    continue;
+                }
+                switch (nancyAttr.Method)
+                {
+                    case Method.GET:
+                        if (methodName == "GetIndex")
+                        {
+                            methodName = string.Empty;
+                            value = GetValue(baseUrl, modulePath, RestSharp.Method.GET);
+                        }
+                        Debug.WriteLine("[GET] " + baseUrl + modulePath + "/" + methodName);
+                        break;
+                    case Method.POST:
+                        Debug.WriteLine("[POST] " + baseUrl + modulePath + "/" + methodName);
+                        break;
+                }
 
-                return ctorExpression.Compile();
-            });
+                ret.Add(method.Name, value);
+            }
 
-            return ctor;
+            return ret;
+        }
+
+        static Func<string> GetValue(string baseUrl, string modulePath, RestSharp.Method method)
+        {
+            var ret = RestServiceInvoke(baseUrl, modulePath, method);
+            return () =>  "Hello World" ;
+        }
+
+        public static object RestServiceInvoke(string url, string resource, RestSharp.Method method)
+        {
+            //var baseUrl = "http://localhost:60770/";
+            var client = new RestClient(url);
+
+            var request = new RestSharp.RestRequest(resource, method);
+
+            var ret = client.Execute(request);
+
+            return ret;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using EJ.ServiceModel;
+﻿using System;
+using EJ.ServiceModel;
 using Nancy;
 using Nancy.ModelBinding;
 
