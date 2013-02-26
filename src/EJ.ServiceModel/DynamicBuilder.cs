@@ -89,7 +89,6 @@ namespace EJ.ServiceModel
             return builder;
         }
    
-
         public void CreateBuilder(Type parentBuilder)
         {
             //Step 1:  Create the Assembly
