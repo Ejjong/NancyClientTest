@@ -32,6 +32,11 @@ namespace EJ.ServiceModule
             return id.ToString();
         }
 
+        public int GetNum(string str)
+        {
+            return int.Parse(str);
+        }
+
         public TestModel GetModel()
         {
             return new TestModel() { Id1 = "jonglee1", Id2 = "jonglee2" };

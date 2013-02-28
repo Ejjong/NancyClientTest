@@ -15,6 +15,9 @@ namespace EJ.ServiceModel
 
         [NancyOperationContract(Method = Method.POST)]
         TestModel GetModel();
+
+        [NancyOperationContract(Method = Method.GET)]
+        int GetNum(string str);
     }
 
     public class TestModel

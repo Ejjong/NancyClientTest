@@ -13,6 +13,7 @@ namespace EJ.ServiceModel
     public static class ObjectCreator
     {
         static readonly string baseUrl = "http://localhost:60770/";
+        //static readonly string baseUrl = "http://nancy.nanuminet.co.kr/nancy/";
 
         public static object CreateObject<T>() where T: class
         {
@@ -51,16 +52,26 @@ namespace EJ.ServiceModel
                         if (methodName == "GetIndex")
                         {
                             methodName = string.Empty;
-                            value = GetValue(baseUrl, modulePath, RestSharp.Method.GET);
+                            //value = GetValue(baseUrl, modulePath, RestSharp.Method.GET);
                         }
-                        else if (methodName == "GetID")
-                        {
-                            value = GetValue2(baseUrl, modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET);
-                        }
-                        else if (methodName == "GetMessage")
-                        {
-                            value = GetValue3(baseUrl, modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET);
-                        }
+                        //else if (methodName == "GetID" || methodName == "GetMessage" || methodName == "GetNum")
+                        else {
+                            if (parameters[0].ParameterType == typeof(string) &&
+                                returnParameter.ParameterType == typeof (int))
+                            {
+                                value = GetValue<string, int>(modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET);
+                            }
+                            else if (parameters[0].ParameterType == typeof(string) && 
+                                returnParameter.ParameterType == typeof(string))
+                            {
+                                value = GetValue<string, string>(modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET);
+                            }
+                            else if (parameters[0].ParameterType == typeof(int) &&
+                                returnParameter.ParameterType == typeof(string))
+                            {
+                                value = GetValue<int, string>(modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET);
+                            }
+                         }
                         Debug.WriteLine("[GET] " + baseUrl + modulePath + "/" + methodName);
                         break;
                     case Method.POST:
@@ -74,72 +85,33 @@ namespace EJ.ServiceModel
             return ret;
         }
 
-        static Func<string> GetValue(string baseUrl, string modulePath, RestSharp.Method method)
+        static Func<T1, TR> GetValue<T1,TR>(string modulePath, RestSharp.Method method)
         {
-            var client = new RestClient(baseUrl);
-            var request = new RestRequest(modulePath, method);
-
-            IRestResponse response = client.Execute(request);
-            var ret = response.StatusCode == HttpStatusCode.OK ? response.Content : null;
-
-            if (ret != null)
-            {
-                return () => ret;
-            }
-
-            return () => null;
-        }
-
-        static Func<int, string> GetValue2(string baseUrl, string modulePath, RestSharp.Method method)
-        {
-            var client = new RestClient(baseUrl);
-            var request = new RestRequest(modulePath + @"/{id}", method);
-
-            return (id) =>
+            return (msg) =>
                 {
-                    request.AddUrlSegment("id", id.ToString());
-                    IRestResponse response = client.Execute(request);
-
-                    var ret = response.StatusCode == HttpStatusCode.OK ? response.Content : null;
-
-                    if (ret != null)
-                    {
-                        return ret;
-                    }
-                    return null;
+                    var ret = GetResult<TR>(modulePath, method, msg);
+                    return (TR)Convert.ChangeType(ret, typeof(TR)); 
                 };
         }
 
-        static Func<string, string> GetValue3(string baseUrl, string modulePath, RestSharp.Method method)
-        {
-            ParameterExpression _baseUrl = Expression.Parameter(typeof(string), "baseUrl");
-            ParameterExpression _msg = Expression.Parameter(typeof(string), "msg");
-
-            Expression<Func<string, string>> func = Expression.Lambda<Func<string, string>>
-            (
-                Expression.Call(typeof(ObjectCreator), "GetResult", null, _baseUrl, _msg),
-                new[] { _msg }
-            );
-
-           var ret = func.Compile();
-
-            return ret;
-        }
-
-        public static string GetResult(string _baseUrl, string msg)
+        public static TR GetResult<TR>(string modulePath, RestSharp.Method method , params object[] parameters)
         {
             var client = new RestClient(baseUrl);
-            var request = new RestRequest("Hello/Message" + @"/{msg}", RestSharp.Method.GET);
-            request.AddUrlSegment("msg", msg);
+            var request = new RestRequest(modulePath + @"/{msg}", method);
+            request.AddUrlSegment("msg", parameters[0].ToString());
             IRestResponse response = client.Execute(request);
 
+            if (typeof (TR) == typeof(int))
+            {
+                return (TR)Convert.ChangeType(response.StatusCode, typeof(TR)); 
+            }
             var ret = response.StatusCode == HttpStatusCode.OK ? response.Content : null;
 
             if (ret != null)
             {
-                return ret;
+                return (TR)Convert.ChangeType(ret, typeof(TR)); 
             }
-            return null;
+            return default(TR);
         }
     }
 }
