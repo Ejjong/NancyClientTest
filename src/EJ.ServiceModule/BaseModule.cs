@@ -21,32 +21,44 @@ namespace EJ.ServiceModule
             foreach (MethodInfo method in methods)
             {
                 var attr = method.GetCustomAttribute<NancyOperationContractAttribute>();
-                if (attr == null || attr.Method != Method.GET)
+                if (attr == null)
                 {
                     continue;
                 }
                 var parameters = method.GetParameters();
                 var name = method.Name.Remove(0, 3);
-                var path = name == "Index" ? "/" : "/" + name;
+                switch (attr.Method)
                 {
-                    if (!parameters.Any())
-                    {
-                        Get[path] = p => method.Invoke(this, null);
-                    }
-                    else
-                    {
-                        var paramStr = string.Empty;
-                        var paramInfos = new Dictionary<Type, object>();
-                        foreach (var parameter in parameters)
+                    case Method.GET:
                         {
-                            paramStr += "/{" + parameter.Name + "}";
-                            paramInfos.Add(parameter.ParameterType, parameter.Name);
-                        }
-                        path += paramStr;
+                            var path = name == "Index" ? "/" : "/" + name;
+                            {
+                                if (!parameters.Any())
+                                {
+                                    MethodInfo method1 = method;
+                                    Get[path] = p => method1.Invoke(this, null);
+                                }
+                                else
+                                {
+                                    var paramStr = string.Empty;
+                                    var paramInfos = new Dictionary<Type, object>();
+                                    foreach (var parameter in parameters)
+                                    {
+                                        paramStr += "/{" + parameter.Name + "}";
+                                        paramInfos.Add(parameter.ParameterType, parameter.Name);
+                                    }
+                                    path += paramStr;
 
-                        Get[path] = p => method.Invoke(this, GenerateParams(p, paramInfos));
-                    }
+                                    MethodInfo method1 = method;
+                                    Get[path] = p => method1.Invoke(this, GenerateParams(p, paramInfos));
+                                }
+                            }
+                        }
+                        break;
+                    case Method.POST:
+                        break;
                 }
+
             }
         }
 
@@ -57,21 +69,15 @@ namespace EJ.ServiceModule
             foreach (var pInfo in pInfos)
             {
                 Type type = pInfo.Key;
-                if (type == typeof(string))
-                {
-                    ret[i] = (string)param[pInfo.Value.ToString()];
-                }
-                else if (type == typeof(int))
-                {
-                    ret[i] = (int)param[pInfo.Value.ToString()];
-                }
-                else if (type == typeof(TestModel))
-                {
-                    ret[i] = (TestModel)param[pInfo.Value.ToString()];
-                }
+                ret[i] = ConvertValue(param[pInfo.Value.ToString()], type);
                 i++;
             }
             return ret;
+        }
+
+        public static object ConvertValue(object value, Type targetType)
+        {
+            return Convert.ChangeType(value, targetType);
         }
     }
 }

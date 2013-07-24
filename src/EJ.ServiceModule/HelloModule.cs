@@ -7,14 +7,15 @@ namespace EJ.ServiceModule
 {
     public class HelloModule : BaseModule, IHelloModule
     {
+        static readonly string modulePath = "/" + typeof(HelloModule).Name.Replace("Module", "");
         public HelloModule()
-            : base("/Hello")
+            : base(HelloModule.modulePath)
         {
-            Post["/ModelId/{model}"] = p =>
-                {
-                    var model = this.Bind<TestModel>();
-                    return HttpStatusCode.OK;
-                };
+            Post["/NewModel/"] = p =>
+            {
+                var model = this.Bind<TestModel>();
+                return model.Id1 + model.Id2;
+            };
         }
 
         public string GetIndex()
@@ -22,30 +23,24 @@ namespace EJ.ServiceModule
             return "Hello World";
         }
 
+        public int GetCount()
+        {
+            return 404;
+        }
+
+        public DateTime GetDateTime()
+        {
+            return DateTime.Parse("2013-07-23 13:24:56");
+        }
+
         public string GetMessage(string msg)
         {
             return "Hello " + msg;
         }
 
-        public string GetID(int id)
+        public string GetMultiple(string str, int num)
         {
-            return id.ToString();
-        }
-
-        public int GetNum(string str)
-        {
-            return int.Parse(str);
-        }
-
-        public TestModel GetModel()
-        {
-            return new TestModel() { Id1 = "jonglee1", Id2 = "jonglee2" };
-        }
-
-        public string GetModelId(TestModel model)
-        {
-            return model.Id1;
+            return str + num;
         }
     }
-
 }

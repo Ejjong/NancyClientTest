@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using ImpromptuInterface;
 using ImpromptuInterface.Dynamic;
 using RestSharp;
+using System.Linq;
 
 namespace EJ.ServiceModel
 {
     public static class ObjectCreator
     {
         static readonly string baseUrl = "http://localhost:60770/";
-        //static readonly string baseUrl = "http://nancy.nanuminet.co.kr/nancy/";
 
-        public static object CreateObject<T>() where T: class
+        public static object CreateObject<T>() where T : class
         {
             dynamic impromptuDictionary = new ImpromptuDictionary();
-            var nOps = GetNancyOperation(typeof (T));
+            var nOps = GetNancyOperation(typeof(T));
             foreach (var nOp in nOps)
             {
                 impromptuDictionary[nOp.Key] = nOp.Value;
@@ -29,7 +28,6 @@ namespace EJ.ServiceModel
 
         public static Dictionary<string, object> GetNancyOperation(Type type)
         {
-           
             var modulePath = type.Name.Remove(0, 1).Replace("Module", "");
 
             var ret = new Dictionary<string, object>();
@@ -40,7 +38,6 @@ namespace EJ.ServiceModel
             {
                 var methodName = method.Name;
                 var parameters = method.GetParameters();
-                var returnParameter = method.ReturnParameter;
                 var nancyAttr = method.GetCustomAttribute<NancyOperationContractAttribute>();
                 if (nancyAttr == null)
                 {
@@ -49,68 +46,111 @@ namespace EJ.ServiceModel
                 switch (nancyAttr.Method)
                 {
                     case Method.GET:
-                        if (methodName == "GetIndex")
+                        if (parameters.Length == 0)
                         {
-                            methodName = string.Empty;
-                            //value = GetValue(baseUrl, modulePath, RestSharp.Method.GET);
+                            if (methodName == "GetIndex")
+                            {
+                                methodName = string.Empty;
+                            }
+
+                            Type ex = typeof(ObjectCreator);
+                            MethodInfo mi = ex.GetMethod("GetValue");
+                            Type returnType = method.ReturnParameter.ParameterType;
+                            MethodInfo miConstructed = mi.MakeGenericMethod(returnType);
+
+                            object[] args = { modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET };
+                            value = miConstructed.Invoke(null, args);
                         }
-                        //else if (methodName == "GetID" || methodName == "GetMessage" || methodName == "GetNum")
-                        else {
-                            if (parameters[0].ParameterType == typeof(string) &&
-                                returnParameter.ParameterType == typeof (int))
+                        else
+                        {
+                            Type ex = typeof(ObjectCreator);
+                            var _methods = ex.GetMethods();
+                            var mi = _methods.Where(m => m.Name == "GetValue2" && m.GetGenericArguments().Count() == method.GetParameters().Count() + 1).SingleOrDefault();
+                            Type returnType = method.ReturnParameter.ParameterType;
+                            Type[] types = new Type[parameters.Length + 1];
+                            string[] pStrings = new string[parameters.Length];
+                            string query = "";
+                            for (int i = 0; i < parameters.Length; i++)
                             {
-                                value = GetValue<string, int>(modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET);
+                                var curP = parameters[i];
+                                types[i] = curP.ParameterType;
+                                pStrings[i] = curP.Name;
+                                query += "/{" + curP.Name + "}";
                             }
-                            else if (parameters[0].ParameterType == typeof(string) && 
-                                returnParameter.ParameterType == typeof(string))
-                            {
-                                value = GetValue<string, string>(modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET);
-                            }
-                            else if (parameters[0].ParameterType == typeof(int) &&
-                                returnParameter.ParameterType == typeof(string))
-                            {
-                                value = GetValue<int, string>(modulePath + "/" + methodName.Replace("Get", string.Empty), RestSharp.Method.GET);
-                            }
-                         }
+                            types[parameters.Length] = returnType;
+
+                            MethodInfo miConstructed = mi.MakeGenericMethod(types);
+
+                            object[] args = { modulePath + "/" + methodName.Replace("Get", string.Empty) + query, RestSharp.Method.GET, pStrings };
+                            value = miConstructed.Invoke(null, args);
+                        }
                         Debug.WriteLine("[GET] " + baseUrl + modulePath + "/" + methodName);
                         break;
                     case Method.POST:
-                        Debug.WriteLine("[POST] " + baseUrl + modulePath + "/" + methodName);
                         break;
                 }
-
-                ret.Add(method.Name, value); 
+                ret.Add(method.Name, value);
             }
 
             return ret;
         }
 
-        static Func<T1, TR> GetValue<T1,TR>(string modulePath, RestSharp.Method method)
+        public static Func<T1, TR> GetValue2<T1, TR>(string modulePath, RestSharp.Method method, string[] paramNames)
         {
-            return (msg) =>
-                {
-                    var ret = GetResult<TR>(modulePath, method, msg);
-                    return (TR)Convert.ChangeType(ret, typeof(TR)); 
-                };
+            return (p1) =>
+            {
+                var ret = GetResult<TR>(modulePath, method, paramNames, p1);
+                return ret;
+            };
         }
 
-        public static TR GetResult<TR>(string modulePath, RestSharp.Method method , params object[] parameters)
+        public static Func<T1, T2, TR> GetValue2<T1, T2, TR>(string modulePath, RestSharp.Method method, string[] paramNames)
+        {
+            return (p1, p2) =>
+            {
+                var ret = GetResult<TR>(modulePath, method, paramNames, new object[] { p1, p2});
+                return ret;
+            };
+        }
+
+        public static Func<TR> GetValue<TR>(string modulePath, RestSharp.Method method)
+        {
+            return () =>
+            {
+                var ret = GetResult<TR>(modulePath, method, null, null);
+                return ret;
+            };
+        }
+
+        public static TR GetResult<TR>(string modulePath, RestSharp.Method method, string[] paramNames, params object[] parameters)
         {
             var client = new RestClient(baseUrl);
-            var request = new RestRequest(modulePath + @"/{msg}", method);
-            request.AddUrlSegment("msg", parameters[0].ToString());
+            var request = new RestRequest(modulePath , method);
+
+            if (paramNames != null && parameters != null)
+            {
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    request.AddUrlSegment(paramNames[i], parameters[i].ToString());
+                }
+            }
+            
             IRestResponse response = client.Execute(request);
 
-            if (typeof (TR) == typeof(int))
+            if (typeof(TR) == typeof(int))
             {
-                return (TR)Convert.ChangeType(response.StatusCode, typeof(TR)); 
+                return (TR)Convert.ChangeType(response.StatusCode, typeof(TR));
             }
-            var ret = response.StatusCode == HttpStatusCode.OK ? response.Content : null;
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                if (response.ContentType == "application/json; charset=utf8")
+                {
+                    var ret = ServiceStack.Text.JsonSerializer.DeserializeFromString<TR>(response.Content);
+                    return ret;
+                }
+                return (TR)Convert.ChangeType(response.Content, typeof(TR));
+            }
 
-            if (ret != null)
-            {
-                return (TR)Convert.ChangeType(ret, typeof(TR)); 
-            }
             return default(TR);
         }
     }

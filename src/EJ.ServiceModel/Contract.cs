@@ -8,16 +8,28 @@ namespace EJ.ServiceModel
         string GetIndex();
 
         [NancyOperationContract(Method = Method.GET)]
+        int GetCount();
+
+        [NancyOperationContract(Method = Method.GET)]
+        DateTime GetDateTime();
+
+        [NancyOperationContract(Method = Method.GET)]
         string GetMessage(string msg);
 
         [NancyOperationContract(Method = Method.GET)]
-        string GetID(int id);
+        string GetMultiple(string str, int num);
+    }
 
-        [NancyOperationContract(Method = Method.POST)]
-        TestModel GetModel();
-
+    public interface ITestModule
+    {
         [NancyOperationContract(Method = Method.GET)]
-        int GetNum(string str);
+        TestModel GetIndex();
+    }
+
+    public interface IExtModule
+    {
+        [NancyOperationContract(Method = Method.GET)]
+        string GetIndex();
     }
 
     public class TestModel
