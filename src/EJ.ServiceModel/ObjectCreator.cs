@@ -12,10 +12,11 @@ namespace EJ.ServiceModel
 {
     public static class ObjectCreator
     {
-        static readonly string baseUrl = "http://localhost:60770/";
+        private static string baseUrl;
 
-        public static object CreateObject<T>() where T : class
+        public static object CreateObject<T>(string hostUrl) where T : class
         {
+            baseUrl = hostUrl;
             dynamic impromptuDictionary = new ImpromptuDictionary();
             var nOps = GetNancyOperation(typeof(T));
             foreach (var nOp in nOps)

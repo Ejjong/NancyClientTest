@@ -1,5 +1,6 @@
 ﻿using EJ.ServiceModel;
 using EJ.ServiceModule;
+using Nancy;
 
 namespace ExtendModule
 {
@@ -9,7 +10,7 @@ namespace ExtendModule
         public ExtModule()
             : base(ExtModule.modulePath)
         {
-            Get["/Test"] = _ => "Ext Test";
+            Get["/Test"] = _ => Response.AsJson(new TestModel() { Id1 = "12", Id2 = "34" });
         }
 
         public string GetIndex()

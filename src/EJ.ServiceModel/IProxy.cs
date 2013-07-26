@@ -2,6 +2,6 @@
 {
     public interface IProxy
     {
-        T Get<T>() where T : class;
+        T Get<T>(string hostUrl) where T : class;
     }
 }

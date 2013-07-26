@@ -1,39 +1,66 @@
-﻿using RestSharp;
+﻿using System;
+using RestSharp;
 using Xunit;
 
 namespace EJ.ServiceModel.Test
 {
-    public class ProxyTest
+    public class ProxyFixture : IDisposable
     {
+        public IProxy CreateProxy()
+        {
+            return new Proxy();
+        }
+
+        public string GetHostUrl
+        {
+            get
+            {
+                return "http://localhost:60770/";
+            }
+        }
+
+        public void Dispose()
+        {
+            //test tear down code
+        }
+    }
+
+    public class ProxyTest : IUseFixture<ProxyFixture>
+    {
+        private IProxy _proxy;
+        private string _hostUrl;
+
+        public void SetFixture(ProxyFixture Fixture)
+        {
+            _proxy = Fixture.CreateProxy();
+            _hostUrl = Fixture.GetHostUrl;
+        }
+
         [Fact]
         public void ValidateGet()
         {
-            IProxy proxy = new Proxy();
-            var impromptuInterface = proxy.Get<IHelloModule>();
+            var impromptuInterface = _proxy.Get<IHelloModule>(_hostUrl);
             Assert.NotNull(impromptuInterface);
         }
 
         [Fact]
         public void GetIndexReturnString()
         {
-            IProxy proxy = new Proxy();
-            var ret = proxy.Get<IHelloModule>().GetIndex();
+            var ret = _proxy.Get<IHelloModule>(_hostUrl).GetIndex();
             Assert.Equal("Hello World", ret);
         }
 
         [Fact]
         public void GetCountReturnInteger()
         {
-            IProxy proxy = new Proxy();
-            var ret = proxy.Get<IHelloModule>().GetCount();
+            var ret = _proxy.Get<IHelloModule>(_hostUrl).GetCount();
             Assert.Equal(404, ret);
         }
 
         [Fact]
         public void GetIndexReturnObject()
         {
-            IProxy proxy = new Proxy();
-            var ret = proxy.Get<ITestModule>().GetIndex();
+            var ret = _proxy.Get<ITestModule>(_hostUrl).GetIndex();
             Assert.NotNull(ret);
             Assert.Equal("123", ret.Id1);
             Assert.Equal("456", ret.Id2);
@@ -42,24 +69,21 @@ namespace EJ.ServiceModel.Test
         [Fact]
         public void GetDateTimeReturnDateTime()
         {
-            IProxy proxy = new Proxy();
-            var ret = proxy.Get<IHelloModule>().GetDateTime();
+            var ret = _proxy.Get<IHelloModule>(_hostUrl).GetDateTime();
             Assert.Equal("2013-07-23 13:24:56", ret.ToString("yyyy-MM-dd HH:mm:ss"));
         }
 
         [Fact]
         public void GetMessage()
         {
-            IProxy proxy = new Proxy();
-            var ret = proxy.Get<IHelloModule>().GetMessage("Nancy");
+            var ret = _proxy.Get<IHelloModule>(_hostUrl).GetMessage("Nancy");
             Assert.Equal("Hello Nancy", ret);
         }
 
         [Fact]
         public void GetMultipleParams()
         {
-            IProxy proxy = new Proxy();
-            var ret = proxy.Get<IHelloModule>().GetMultiple("Nancy", 2013);
+            var ret = _proxy.Get<IHelloModule>(_hostUrl).GetMultiple("Nancy", 2013);
             Assert.Equal("Nancy2013", ret);
         }
 
