@@ -6,7 +6,7 @@ namespace EJ.ServiceModel.Test
     public class ObjectCreatorTest
     {
         [Fact]
-        public void CreateObject()
+        public void TestCreateObject()
         {
             Type type = typeof(IHelloModule);
             var ret = ObjectCreator.CreateObject<IHelloModule>("hostUrl");
@@ -15,7 +15,7 @@ namespace EJ.ServiceModel.Test
         }
 
         [Fact]
-        public void GetNancyOperation()
+        public void TestGetNancyOperation()
         {
             Type type = typeof (IHelloModule);
             var ret = ObjectCreator.GetNancyOperation(type);
