@@ -8,7 +8,6 @@ namespace EJ.ServiceModel.Test
         [Fact]
         public void TestCreateObject()
         {
-            Type type = typeof(IHelloModule);
             var ret = ObjectCreator.CreateObject<IHelloModule>("hostUrl");
             Assert.NotNull(ret);
             Assert.True(ret is IHelloModule);
