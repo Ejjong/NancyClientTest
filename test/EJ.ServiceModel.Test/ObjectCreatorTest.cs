@@ -16,7 +16,7 @@ namespace EJ.ServiceModel.Test
         [Fact]
         public void TestGetNancyOperation()
         {
-            Type type = typeof (IHelloModule);
+            var type = typeof (IHelloModule);
             var ret = ObjectCreator.GetNancyOperation(type);
             Assert.NotNull(ret);
         }
