@@ -16,7 +16,7 @@ namespace EJ.ServiceModel.Test.Modules
             _target = proxy.Get<IHelloModule>(hostUrl);
         }
 
-        [Fact]
+        [Fact(Skip = "Self Hosting Test")]
         public void GetIndex()
         {
             using (NancyHostUtil.CreateAndOpenSelfHost())
@@ -26,7 +26,7 @@ namespace EJ.ServiceModel.Test.Modules
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Self Hosting Test")]
         public void GetCount()
         {
             using (NancyHostUtil.CreateAndOpenSelfHost())
@@ -36,7 +36,7 @@ namespace EJ.ServiceModel.Test.Modules
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Self Hosting Test")]
         public void GetDateTime()
         {
             using (NancyHostUtil.CreateAndOpenSelfHost())
@@ -46,7 +46,7 @@ namespace EJ.ServiceModel.Test.Modules
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Self Hosting Test")]
         public void GetMessage()
         {
             using (NancyHostUtil.CreateAndOpenSelfHost())
@@ -56,7 +56,7 @@ namespace EJ.ServiceModel.Test.Modules
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Self Hosting Test")]
         public void GetMultiple()
         {
             using (NancyHostUtil.CreateAndOpenSelfHost())
