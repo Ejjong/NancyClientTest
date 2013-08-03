@@ -37,13 +37,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EJ.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\EJ.Web\bin\EJ.ServiceModel.dll</HintPath>
-    </Reference>
-    <Reference Include="EJ.ServiceModule">
-      <HintPath>..\..\src\EJ.Web\bin\EJ.ServiceModule.dll</HintPath>
-    </Reference>
     <Reference Include="Nancy, Version=0.18.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Nancy.0.18.0\lib\net40\Nancy.dll</HintPath>
@@ -77,6 +70,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EJ.ServiceModel\EJ.ServiceModel.csproj">
+      <Project>{622eff31-1370-4ccd-bea1-c47990a48dfe}</Project>
+      <Name>EJ.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\EJ.ServiceModule\EJ.ServiceModule.csproj">
+      <Project>{41bba707-4206-4beb-a81e-c0b50f23b403}</Project>
+      <Name>EJ.ServiceModule</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
