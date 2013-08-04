@@ -49,6 +49,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Nancy.0.18.0\lib\net40\Nancy.dll</HintPath>
     </Reference>
+    <Reference Include="Nancy.Hosting.Self">
+      <HintPath>..\..\packages\Nancy.Hosting.Self.0.18.0\lib\net40\Nancy.Hosting.Self.dll</HintPath>
+    </Reference>
     <Reference Include="Nancy.Testing, Version=0.18.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Nancy.Testing.0.18.0\lib\net40\Nancy.Testing.dll</HintPath>
@@ -63,7 +66,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseModuleTest.cs" />
+    <Compile Include="Modules\BaseModuleTest.cs" />
+    <Compile Include="Modules\HelloModuleTests.cs" />
+    <Compile Include="NancyHostWrapper.cs" />
+    <Compile Include="ProxyFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\EJ.ServiceModel\EJ.ServiceModel.csproj">

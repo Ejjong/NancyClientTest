@@ -24,6 +24,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EJ.ServiceModel.Test", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtendModule", "src\ExtendModule\ExtendModule.csproj", "{0947C934-D11A-431B-914A-D19BDAE16AE9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{595E4450-988B-4A50-A9BA-5DFA843040D9}"
+	ProjectSection(SolutionItems) = preProject
+		NancyClient.Build.proj = NancyClient.Build.proj
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

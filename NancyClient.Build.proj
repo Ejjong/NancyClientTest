@@ -1,0 +1,38 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <ProjectRoot>$(MSBuildProjectDirectory)</ProjectRoot>
+    <Configuration Condition="$(Configuration) == ''">Release</Configuration>
+    <OutputPath>$(ProjectRoot)\output\$(Configuration)</OutputPath>
+    <ArtifactsPath>$(ProjectRoot)\artifacts</ArtifactsPath>
+
+    <TargetDepends Condition=" '$(OS)' == 'Windows_NT'">Build;Test</TargetDepends>
+    <TargetDepends Condition=" '$(OS)' != 'Windows_NT'">Build;Test</TargetDepends>
+  </PropertyGroup>
+
+  <UsingTask AssemblyFile="packages\xunit.1.9.1\lib\net20\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit" />
+
+  <Target Name="CI"  DependsOnTargets="$(TargetDepends)">
+  </Target>
+
+  <Target Name="Build">
+    <MSBuild Projects="$(ProjectRoot)\NancyClient.sln"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);OutputPath=$(OutputPath)" />
+  </Target>
+
+  <Target Name="Test" DependsOnTargets="Build">
+    <ItemGroup>
+      <TestAssemblies Include="$(OutputPath)\EJ.*.Test.dll" />
+    </ItemGroup>
+    <xunit Assemblies="@(TestAssemblies)" />
+  </Target>
+
+  <!--<Target Name="ArtifactsServer" DependsOnTargets="BuildServer">
+    <ItemGroup>
+      <ArtifactsServerFiles Include="$(OutputPath)\Server\SAF.*" Exclude="$(OutputPath)\Server\*Tests.*"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(ArtifactsServerFiles)"
+          DestinationFolder="$(ArtifactsPath)\Server" />
+  </Target>-->
+</Project>
