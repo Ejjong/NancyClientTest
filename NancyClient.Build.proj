@@ -10,7 +10,7 @@
     <TargetDepends Condition=" '$(OS)' != 'Windows_NT'">Build;Test</TargetDepends>
   </PropertyGroup>
 
-  <UsingTask AssemblyFile="packages\xunit.1.9.1\lib\net20\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit" />
+  <UsingTask AssemblyFile="packages\xunit.1.9.2\lib\net20\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit" />
 
   <Target Name="CI"  DependsOnTargets="$(TargetDepends)">
   </Target>
